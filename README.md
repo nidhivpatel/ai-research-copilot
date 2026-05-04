@@ -19,7 +19,7 @@ An MCP server that combines **Firecrawl** (web scraping), **Langfuse** (observab
                               ▼                                ▼
                     ┌───────────────────┐          ┌───────────────────┐
                     │   Firecrawl API   │          │ vLLM on Scaleway  │
-                    │   (web scraping)  │          │ (Llama 3.1 8B)   │
+                    │   (web scraping)  │          │ (Llama 3.1 8B)    │
                     │   INTEGRATE       │          │ EXECUTE           │
                     └───────────────────┘          └─────────┬─────────┘
                                                              │
