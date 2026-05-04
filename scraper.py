@@ -27,8 +27,8 @@ async def scrape(url: str) -> str:
     """Scrape a URL and return clean markdown content."""
     fc = _get_firecrawl()
     if fc:
-        result = fc.scrape_url(url, formats=["markdown"])
-        return result.get("markdown", "") if isinstance(result, dict) else result.markdown
+        result = fc.scrape(url, formats=["markdown"])
+        return result.markdown or ""
 
     # Fallback: httpx + bs4 + markdownify
     async with httpx.AsyncClient(follow_redirects=True, timeout=30) as client:
@@ -49,19 +49,13 @@ async def search(query: str, limit: int = 3) -> list[dict]:
     fc = _get_firecrawl()
     if fc:
         results = fc.search(query, limit=limit)
-        items = results if isinstance(results, list) else results.data
-        return [
-            {
-                "title": r.get("title", "") if isinstance(r, dict) else r.title,
-                "url": r.get("url", "") if isinstance(r, dict) else r.url,
-                "content": (
-                    r.get("markdown", r.get("content", ""))
-                    if isinstance(r, dict)
-                    else r.markdown
-                ),
-            }
-            for r in items[:limit]
-        ]
+        items = results.web or []
+        out = []
+        for r in items[:limit]:
+            # search results don't include markdown — scrape each URL
+            content = await scrape(r.url)
+            out.append({"title": r.title or "", "url": r.url, "content": content})
+        return out
 
     # Fallback: no search without Firecrawl — return empty
     return []
