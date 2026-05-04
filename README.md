@@ -5,29 +5,29 @@ An MCP server that combines **Firecrawl** (web scraping), **Langfuse** (observab
 ## Architecture
 
 ```
-┌─────────────────┐     stdio      ┌──────────────────────┐
-│  Claude Desktop  │◄──────────────►│   MCP Server (Python) │
-│  (ENGAGE)        │                │                      │
-└─────────────────┘                │  Tools:              │
-                                   │  - research_topic    │
-                                   │  - scrape_url        │
-                                   │  - summarize_text    │
-                                   │  - ask_llm           │
-                                   └──────┬───────┬───────┘
-                                          │       │
-                              ┌───────────┘       └────────────┐
+┌───────────────────┐    stdio    ┌────────────────────────┐
+│   Claude Desktop  │◄───────────►│   MCP Server (Python)  │
+│   (ENGAGE)        │             │                        │
+└───────────────────┘             │   Tools:               │
+                                  │   - research_topic     │
+                                  │   - scrape_url         │
+                                  │   - summarize_text     │
+                                  │   - ask_llm            │
+                                  └───────┬────────┬───────┘
+                                          │        │
+                              ┌───────────┘        └───────────┐
                               ▼                                ▼
-                    ┌──────────────────┐            ┌─────────────────┐
-                    │   Firecrawl API   │            │  vLLM on Scaleway│
-                    │  (web scraping)   │            │  (Llama 3.1 8B)  │
-                    │   INTEGRATE       │            │  EXECUTE          │
-                    └──────────────────┘            └────────┬────────┘
+                    ┌───────────────────┐          ┌───────────────────┐
+                    │   Firecrawl API   │          │ vLLM on Scaleway  │
+                    │   (web scraping)  │          │ (Llama 3.1 8B)   │
+                    │   INTEGRATE       │          │ EXECUTE           │
+                    └───────────────────┘          └─────────┬─────────┘
                                                              │
-                                                    ┌────────▼────────┐
-                                                    │    Langfuse      │
-                                                    │  (observability) │
-                                                    │   GOVERN         │
-                                                    └─────────────────┘
+                                                   ┌─────────▼─────────┐
+                                                   │     Langfuse      │
+                                                   │  (observability)  │
+                                                   │     GOVERN        │
+                                                   └───────────────────┘
 ```
 
 ## Quick Start
@@ -55,13 +55,13 @@ cp .env.example .env
 | `FIRECRAWL_API_KEY` | Firecrawl key (free at [firecrawl.dev](https://firecrawl.dev)) — leave empty for httpx fallback |
 | `LANGFUSE_PUBLIC_KEY` | Auto-provisioned as `lf_pk_copilot` by docker-compose |
 | `LANGFUSE_SECRET_KEY` | Auto-provisioned as `lf_sk_copilot` by docker-compose |
-| `LANGFUSE_HOST` | `http://localhost:3000` |
+| `LANGFUSE_HOST` | `http://localhost:3001` |
 
 ### 3. Start Langfuse
 
 ```bash
 docker compose up -d
-# Dashboard: http://localhost:3000
+# Dashboard: http://localhost:3001
 # Login: admin@copilot.local / copilotadmin
 ```
 
@@ -101,7 +101,7 @@ Restart Claude Desktop — you'll see the 4 tools available.
 
 ## Demo Flow
 
-1. Open Langfuse dashboard at `localhost:3000`
+1. Open Langfuse dashboard at `localhost:3001`
 2. In Claude Desktop, ask: *"Research the latest developments in Kubernetes GPU scheduling"*
    - Claude calls `research_topic` → Firecrawl searches & scrapes → vLLM summarizes
 3. Check Langfuse — see the full trace with token counts, latency, and model info

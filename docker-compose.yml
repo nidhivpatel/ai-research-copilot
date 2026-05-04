@@ -1,6 +1,6 @@
 # Langfuse v3 self-hosted stack for AI Research Copilot
 # Start: docker compose up -d
-# Dashboard: http://localhost:3000 (admin@copilot.local / copilotadmin)
+# Dashboard: http://localhost:3001 (admin@copilot.local / copilotadmin)
 
 services:
   langfuse-worker:
@@ -19,9 +19,9 @@ services:
       - 127.0.0.1:3030:3030
     environment: &langfuse-worker-env
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/postgres
-      NEXTAUTH_URL: http://localhost:3000
+      NEXTAUTH_URL: http://localhost:3001
       SALT: copilot-salt-change-me
-      ENCRYPTION_KEY: 0000000000000000000000000000000000000000000000000000000000000000
+      ENCRYPTION_KEY: 305b6da8c8d1e35921677816ab257b92f587f22722441a1ba3d07e305e7cfd44
       TELEMETRY_ENABLED: "false"
       LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES: "false"
       # ClickHouse
@@ -42,7 +42,7 @@ services:
       LANGFUSE_S3_MEDIA_UPLOAD_REGION: auto
       LANGFUSE_S3_MEDIA_UPLOAD_ACCESS_KEY_ID: minio
       LANGFUSE_S3_MEDIA_UPLOAD_SECRET_ACCESS_KEY: miniosecret
-      LANGFUSE_S3_MEDIA_UPLOAD_ENDPOINT: http://localhost:9090
+      LANGFUSE_S3_MEDIA_UPLOAD_ENDPOINT: http://localhost:9095
       LANGFUSE_S3_MEDIA_UPLOAD_FORCE_PATH_STYLE: "true"
       LANGFUSE_S3_MEDIA_UPLOAD_PREFIX: media/
       LANGFUSE_S3_BATCH_EXPORT_ENABLED: "false"
@@ -59,7 +59,7 @@ services:
     restart: always
     depends_on: *langfuse-depends-on
     ports:
-      - 3000:3000
+      - 3001:3000
     environment:
       <<: *langfuse-worker-env
       NEXTAUTH_SECRET: copilot-nextauth-secret
@@ -104,8 +104,8 @@ services:
       MINIO_ROOT_USER: minio
       MINIO_ROOT_PASSWORD: miniosecret
     ports:
-      - 9090:9000
-      - 127.0.0.1:9091:9001
+      - 9095:9000
+      - 127.0.0.1:9096:9001
     volumes:
       - langfuse_minio_data:/data
     healthcheck:
