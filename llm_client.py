@@ -4,9 +4,11 @@ from __future__ import annotations
 
 import os
 
+from langfuse import Langfuse
 from langfuse.openai import OpenAI
 
 _client: OpenAI | None = None
+_langfuse: Langfuse | None = None
 
 
 def _get_client() -> OpenAI:
@@ -17,6 +19,13 @@ def _get_client() -> OpenAI:
             api_key=os.getenv("LLM_API_KEY", "not-needed"),
         )
     return _client
+
+
+def _flush():
+    global _langfuse
+    if _langfuse is None:
+        _langfuse = Langfuse()
+    _langfuse.flush()
 
 
 def _model() -> str:
@@ -34,6 +43,7 @@ def summarize(text: str, instruction: str = "") -> str:
         ],
         max_tokens=1024,
     )
+    _flush()
     return resp.choices[0].message.content
 
 
@@ -44,4 +54,5 @@ def chat(messages: list[dict]) -> str:
         messages=messages,
         max_tokens=1024,
     )
+    _flush()
     return resp.choices[0].message.content
