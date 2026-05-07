@@ -17,3 +17,6 @@ langfuse_postgres_data/
 langfuse_clickhouse_data/
 langfuse_minio_data/
 langfuse_redis_data/
+
+# Demo runbook (contains tokens and IPs)
+DEMO.md
