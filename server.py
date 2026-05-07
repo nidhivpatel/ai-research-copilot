@@ -22,7 +22,7 @@ mcp = FastMCP(
 
 
 @mcp.tool()
-async def research_topic(topic: str, depth: int = 3) -> str:
+async def research_topic(topic: str, depth: int = 2) -> str:
     """Search the web for a topic, scrape top results, and synthesize a research summary.
 
     Args:

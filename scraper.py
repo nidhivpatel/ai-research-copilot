@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import os
 
 import httpx
@@ -50,12 +51,11 @@ async def search(query: str, limit: int = 3) -> list[dict]:
     if fc:
         results = fc.search(query, limit=limit)
         items = results.web or []
-        out = []
-        for r in items[:limit]:
-            # search results don't include markdown — scrape each URL
+        # Scrape all URLs in parallel for speed
+        async def _scrape_item(r):
             content = await scrape(r.url)
-            out.append({"title": r.title or "", "url": r.url, "content": content})
-        return out
+            return {"title": r.title or "", "url": r.url, "content": content}
+        return await asyncio.gather(*[_scrape_item(r) for r in items[:limit]])
 
     # Fallback: no search without Firecrawl — return empty
     return []
